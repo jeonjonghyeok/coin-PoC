@@ -8,9 +8,9 @@ http://localhost:5000/blocks
 POST http://localhost:5000/blocks
 
 {
-    "message": "It is my first block!"
+    "message": "My Block"
 }
 
 ###
 
-http://localhost:5000/blocks/4
+http://localhost:5000/blocks/910007e6bb8bab99a4500c0ea421b87ea06a88e8cc615a5f4a0b19212e153f6c
