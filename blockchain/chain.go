@@ -23,7 +23,7 @@ func (b *blockchain) restore(data []byte) {
 }
 
 func (b *blockchain) persist() {
-	db.SaveBlockchain(utils.ToBytes(b))
+	db.SaveCheckPoint(utils.ToBytes(b))
 }
 
 func (b *blockchain) AddBlock(data string) {
