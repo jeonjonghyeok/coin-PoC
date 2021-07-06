@@ -40,7 +40,6 @@ func (b *Block) mine() {
 		} else {
 			b.Nonce++
 		}
-
 	}
 }
 
@@ -56,16 +55,16 @@ func FindBlock(hash string) (*Block, error) {
 	return block, nil
 }
 
-func createBlock(newestHash string, height int) *Block {
+func createBlock(newestHash string, height, diff int) *Block {
 	block := &Block{
-		Hash:         "",
-		PrevHash:     newestHash,
-		Height:       height,
-		Difficulty:   Blockchain().difficulty(),
-		Nonce:        0,
-		Transactions: []*Tx{makeCoinbaseTx("jjh")},
+		Hash:       "",
+		PrevHash:   newestHash,
+		Height:     height,
+		Difficulty: diff,
+		Nonce:      0,
 	}
 	block.mine()
+	block.Transactions = Mempool.TxToConfirm()
 	block.persist()
 	return block
 }

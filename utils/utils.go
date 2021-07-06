@@ -12,7 +12,6 @@ func HandleErr(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func ToBytes(i interface{}) []byte {

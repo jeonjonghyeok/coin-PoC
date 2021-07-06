@@ -7,13 +7,20 @@ http://localhost:5000/blocks
 ###
 POST http://localhost:5000/blocks
 
-{
-    "message": "My Mine!"
-}
-
 ###
-
 http://localhost:5000/blocks/00f135a7e603408eada032e1023ab749d0e9dff4f0e366131a1928f2a1af1191
 
 ###
-GET http://localhost:5000/balance/jjh?total=true
+GET http://localhost:5000/balance/ssh?total=true
+
+###
+GET http://localhost:5000/mempool
+
+###
+POST http://localhost:5000/transactions
+
+{
+    "to":"ssh",
+    "amount":30
+}
+

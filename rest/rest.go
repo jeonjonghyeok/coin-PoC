@@ -36,6 +36,11 @@ type balanceResponse struct {
 	Balance int    `json:"balance"`
 }
 
+type addTxPayload struct {
+	To     string
+	Amount int
+}
+
 func documentation(w http.ResponseWriter, r *http.Request) {
 	data := []urlDiscription{
 		{
@@ -70,6 +75,11 @@ func documentation(w http.ResponseWriter, r *http.Request) {
 			Method:      "GET",
 			Description: "Get TxOuts for an Address",
 		},
+		{
+			URL:         url("/transactions"),
+			Method:      "POST",
+			Description: "add transaction",
+		},
 	}
 	json.NewEncoder(w).Encode(data)
 }
@@ -77,7 +87,7 @@ func documentation(w http.ResponseWriter, r *http.Request) {
 func blocks(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		utils.HandleErr(json.NewEncoder(w).Encode(blockchain.Blockchain().Blocks()))
+		utils.HandleErr(json.NewEncoder(w).Encode(blockchain.Blocks(blockchain.Blockchain())))
 	case "POST":
 		blockchain.Blockchain().AddBlock()
 		w.WriteHeader(http.StatusCreated)
@@ -115,11 +125,23 @@ func balance(w http.ResponseWriter, r *http.Request) {
 	total := r.URL.Query().Get("total")
 	switch total {
 	case "true":
-		amount := blockchain.Blockchain().BalanceByAddress(address)
+		amount := blockchain.BalanceByAddress(address, blockchain.Blockchain())
 		json.NewEncoder(w).Encode(balanceResponse{address, amount})
 	default:
-		utils.HandleErr(json.NewEncoder(w).Encode(blockchain.Blockchain().TxOutsByAddress(address)))
+		utils.HandleErr(json.NewEncoder(w).Encode(blockchain.UTxOutsByAddress(address, blockchain.Blockchain())))
 	}
+}
+func mempool(w http.ResponseWriter, r *http.Request) {
+	utils.HandleErr(json.NewEncoder(w).Encode(blockchain.Mempool.Txs))
+}
+func transactions(w http.ResponseWriter, r *http.Request) {
+	var payload addTxPayload
+	utils.HandleErr(json.NewDecoder(r.Body).Decode(&payload))
+	err := blockchain.Mempool.AddTx(payload.To, payload.Amount)
+	if err != nil {
+		json.NewEncoder(w).Encode(errorResponse{"not enough funds"})
+	}
+	w.WriteHeader(http.StatusCreated)
 }
 
 func Start(aPort int) {
@@ -131,6 +153,8 @@ func Start(aPort int) {
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
 	router.HandleFunc("/blocks/{hash:[a-f0-9]+}", block).Methods("GET")
 	router.HandleFunc("/balance/{address}", balance).Methods("GET")
+	router.HandleFunc("/mempool", mempool).Methods("GET")
+	router.HandleFunc("/transactions", transactions).Methods("POST")
 	fmt.Printf("Listening on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, router))
 }
