@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jeonjonghyeok/coin/blockchain"
 	"github.com/jeonjonghyeok/coin/utils"
+	"github.com/jeonjonghyeok/coin/wallet"
 )
 
 var port string
@@ -39,6 +40,10 @@ type balanceResponse struct {
 type addTxPayload struct {
 	To     string
 	Amount int
+}
+
+type myWalletResponse struct {
+	Address string `json:"address"`
 }
 
 func documentation(w http.ResponseWriter, r *http.Request) {
@@ -79,6 +84,11 @@ func documentation(w http.ResponseWriter, r *http.Request) {
 			URL:         url("/transactions"),
 			Method:      "POST",
 			Description: "add transaction",
+		},
+		{
+			URL:         url("/address"),
+			Method:      "GET",
+			Description: "get address",
 		},
 	}
 	json.NewEncoder(w).Encode(data)
@@ -139,9 +149,15 @@ func transactions(w http.ResponseWriter, r *http.Request) {
 	utils.HandleErr(json.NewDecoder(r.Body).Decode(&payload))
 	err := blockchain.Mempool.AddTx(payload.To, payload.Amount)
 	if err != nil {
-		json.NewEncoder(w).Encode(errorResponse{"not enough funds"})
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorResponse{err.Error()})
+		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+func myWallet(w http.ResponseWriter, r *http.Request) {
+	address := wallet.Wallet().Address
+	utils.HandleErr(json.NewEncoder(w).Encode(myWalletResponse{address}))
 }
 
 func Start(aPort int) {
@@ -154,6 +170,7 @@ func Start(aPort int) {
 	router.HandleFunc("/blocks/{hash:[a-f0-9]+}", block).Methods("GET")
 	router.HandleFunc("/balance/{address}", balance).Methods("GET")
 	router.HandleFunc("/mempool", mempool).Methods("GET")
+	router.HandleFunc("/wallet", myWallet).Methods("GET")
 	router.HandleFunc("/transactions", transactions).Methods("POST")
 	fmt.Printf("Listening on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, router))

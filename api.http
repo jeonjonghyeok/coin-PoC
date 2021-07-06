@@ -11,7 +11,7 @@ POST http://localhost:5000/blocks
 http://localhost:5000/blocks/00f135a7e603408eada032e1023ab749d0e9dff4f0e366131a1928f2a1af1191
 
 ###
-GET http://localhost:5000/balance/ssh?total=true
+GET http://localhost:5000/balance/d69a679b7ebb1e6f893aaa00c6c84180d547e297bbcbb5fb6efc3068927d3a98a140da34318d844d07d5818b6fcbee6e69bcd03e6d78c9b24dc99d9e8f79fdd1
 
 ###
 GET http://localhost:5000/mempool
@@ -20,7 +20,9 @@ GET http://localhost:5000/mempool
 POST http://localhost:5000/transactions
 
 {
-    "to":"ssh",
+    "to":"d69a679b7ebb1e6f893aaa00c6c84180d547e297bbcbb5fb6efc3068927d3a98a140da34318d844d07d5818b6fcbee6e69bcd03e6d78c9b24dc99d9e8f79fdd2",
     "amount":30
 }
 
+###
+GET http://localhost:5000/address

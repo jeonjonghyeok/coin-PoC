@@ -1,11 +1,13 @@
 package main
 
 import (
+	"github.com/jeonjonghyeok/coin/blockchain"
+	"github.com/jeonjonghyeok/coin/cli"
 	"github.com/jeonjonghyeok/coin/wallet"
 )
 
 func main() {
-	// blockchain.Blockchain()
-	// cli.Start()
-	wallet.Start()
+	wallet.Wallet()
+	blockchain.Blockchain()
+	cli.Start()
 }
