@@ -10,6 +10,7 @@ require (
 	github.com/gin-gonic/gin v1.7.2 // indirect
 	github.com/goplus/reflectx v0.5.5 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/spf13/cobra v1.1.3 // indirect
 	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 )

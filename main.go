@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/jeonjonghyeok/coin/blockchain"
 	"github.com/jeonjonghyeok/coin/cli"
-	"github.com/jeonjonghyeok/coin/wallet"
+	"github.com/jeonjonghyeok/coin/db"
 )
 
 func main() {
-	wallet.Wallet()
-	blockchain.Blockchain()
+	defer db.Close()
 	cli.Start()
+
 }

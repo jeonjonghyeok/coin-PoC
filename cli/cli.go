@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"runtime"
 
+	"github.com/jeonjonghyeok/coin/explorer"
 	"github.com/jeonjonghyeok/coin/rest"
 )
 
@@ -16,7 +16,7 @@ func usage() {
 	fmt.Printf("Please use the follwing flags:\n")
 	fmt.Printf("-port:		Set the PORT of the server\n")
 	fmt.Printf("-mode:		Start the REST API (recommended)\n\n")
-	runtime.Goexit()
+	os.Exit(0)
 }
 
 func Start() {
@@ -30,7 +30,7 @@ func Start() {
 	case "rest":
 		rest.Start(*port)
 	case "html":
-	//	explorer.Start(*port)
+		explorer.Start(*port)
 	default:
 		usage()
 	}
