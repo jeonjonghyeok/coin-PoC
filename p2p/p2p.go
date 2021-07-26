@@ -18,11 +18,14 @@ func Upgrade(w http.ResponseWriter, r *http.Request) {
 	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	utils.HandleErr(err)
-	initPeer(conn, ip, openPort)
+	peer := initPeer(conn, ip, openPort)
+	peer.inbox <- []byte("hello from 3000!")
 }
 
 func AddPeer(address, port, openPort string) {
 	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s:%s/ws?openPort=%s", address, port, openPort[1:]), nil)
 	utils.HandleErr(err)
-	initPeer(conn, address, port)
+	peer := initPeer(conn, address, port)
+	peer.inbox <- []byte("hello from 4000!")
+
 }
