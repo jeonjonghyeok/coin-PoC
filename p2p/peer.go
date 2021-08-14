@@ -3,6 +3,7 @@ package p2p
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -36,7 +37,10 @@ func AllPeers(p *peers) []string {
 
 func (p *peer) close() {
 	Peers.m.Lock()
-	defer Peers.m.Unlock()
+	defer func() {
+		time.Sleep(time.Second * 20)
+		Peers.m.Unlock()
+	}()
 	p.conn.Close()
 	delete(Peers.v, p.key)
 }
