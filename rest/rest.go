@@ -110,7 +110,8 @@ func blocks(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		utils.HandleErr(json.NewEncoder(w).Encode(blockchain.Blocks(blockchain.Blockchain())))
 	case "POST":
-		blockchain.Blockchain().AddBlock()
+		newBlock := blockchain.Blockchain().AddBlock()
+		p2p.BroadcastNewBlock(newBlock)
 		w.WriteHeader(http.StatusCreated)
 	}
 
@@ -130,7 +131,7 @@ func block(w http.ResponseWriter, r *http.Request) {
 }
 
 func status(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(blockchain.Blockchain())
+	blockchain.Status(blockchain.Blockchain(), w)
 }
 
 func jsonContentTypeMiddleware(next http.Handler) http.Handler {
@@ -190,7 +191,6 @@ func peers(w http.ResponseWriter, r *http.Request) {
 		utils.HandleErr(json.NewEncoder(w).Encode(p2p.AllPeers(&p2p.Peers)))
 	}
 }
-
 func Start(aPort int) {
 	port = fmt.Sprintf(":%d", aPort)
 	router := mux.NewRouter()

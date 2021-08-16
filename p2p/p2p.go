@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/jeonjonghyeok/coin/blockchain"
 	"github.com/jeonjonghyeok/coin/utils"
 )
 
@@ -16,16 +17,24 @@ func Upgrade(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return openPort != "" && ip != ""
 	}
+	fmt.Printf("%s wants an upgrade\n", openPort)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	utils.HandleErr(err)
-	peer := initPeer(conn, ip, openPort)
-	peer.inbox <- []byte("hello from 3000!")
+	initPeer(conn, ip, openPort)
 }
 
 func AddPeer(address, port, openPort string) {
+	fmt.Printf("%s wants to connect to port %s\n", openPort, port)
 	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s:%s/ws?openPort=%s", address, port, openPort[1:]), nil)
 	utils.HandleErr(err)
-	peer := initPeer(conn, address, port)
-	peer.inbox <- []byte("hello from 4000!")
+	p := initPeer(conn, address, port)
+	sendNewestBlock(p)
+}
 
+func BroadcastNewBlock(b *blockchain.Block) {
+	Peers.m.Lock()
+	defer Peers.m.Unlock()
+	for _, p := range Peers.v {
+		notifyNewBlock(b, p)
+	}
 }
